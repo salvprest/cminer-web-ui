@@ -164,6 +164,14 @@ RUN set -e; \
     mkdir -p /app/backend/data; chown -R $UID:$GID /app/backend/data/; \
     rm -rf /var/lib/apt/lists/*;
 
+# ==========================================
+# CUSTOM ADDITION: Install extra packages
+# ==========================================
+COPY --chown=$UID:$GID custom-requirements.txt ./custom-requirements.txt
+RUN pip3 install -r custom-requirements.txt
+#RUN pip3 install --no-cache-dir -r custom-requirements.txt
+# ==========================================
+
 # Install Ollama if requested
 RUN if [ "$USE_OLLAMA" = "true" ]; then \
     date +%s > /tmp/ollama_build_hash && \

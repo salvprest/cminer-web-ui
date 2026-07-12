@@ -1,0 +1,21 @@
+services:
+  open-webui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # If you need build args (like CUDA), uncomment and add them here:
+      # args:
+      #   - USE_CUDA=true
+    container_name: open-webui-custom
+    image: open-webui-custom:latest
+    ports:
+      - "3000:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - open-webui-data:/app/backend/data
+    restart: always
+
+volumes:
+  open-webui-data:
+    name: open-webui-custom-data
