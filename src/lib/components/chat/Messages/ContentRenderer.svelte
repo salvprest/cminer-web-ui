@@ -6,7 +6,6 @@
 	import StructuredOutputRenderer from './StructuredOutputRenderer.svelte';
 	import {
 		artifactCode,
-		chatId,
 		mobile,
 		settings,
 		showArtifacts,
@@ -136,8 +135,7 @@
 			if (
 				($settings?.detectArtifacts ?? true) &&
 				(['html', 'svg'].includes(lang) || (lang === 'xml' && code.includes('svg'))) &&
-				!$mobile &&
-				$chatId
+				!$mobile
 			) {
 				await tick();
 				showArtifacts.set(true);

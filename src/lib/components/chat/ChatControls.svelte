@@ -20,7 +20,8 @@
 		settings,
 		showFileNavPath,
 		selectedTerminalId,
-		user
+		user,
+		artifactContents
 	} from '$lib/stores';
 
 	import { uploadFile } from '$lib/apis/files';
@@ -165,7 +166,8 @@
 			);
 			pane.resize(size);
 		} else {
-			pane.resize(minSize);
+			// Default width: artifacts start at ~50%, other panels at minSize.
+			pane.resize($showArtifacts ? 50 : minSize);
 		}
 	};
 
@@ -271,6 +273,26 @@
 
 	// Helper: is a "special" full-screen panel active?
 	$: specialPanel = $showCallOverlay || $showArtifacts || $showEmbeds;
+
+	// Ensure the pane is actually expanded if showControls is true but the pane
+	// binding wasn't ready when showControls first flipped (first-message race).
+	$: if (paneReady && pane && largeScreen && $showControls && !pane.isExpanded()) {
+		openPane();
+	}
+
+	// Fallback: if artifact detection somehow misses the first streamed code block
+	// (e.g. $chatId wasn't ready yet), open the pane as soon as artifacts appear.
+	let lastArtifactCount = 0;
+	$: if (!$mobile && ($artifactContents?.length ?? 0) > lastArtifactCount) {
+		lastArtifactCount = $artifactContents.length;
+		if ($settings?.detectArtifacts ?? true) {
+			showArtifacts.set(true);
+			showControls.set(true);
+		}
+	}
+	$: if (($artifactContents?.length ?? 0) === 0) {
+		lastArtifactCount = 0;
+	}
 </script>
 
 {#if !largeScreen}
